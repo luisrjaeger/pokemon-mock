@@ -26,11 +26,13 @@ mainRouter.get("/pokemon/:id?", function (req, res) {
 mainRouter.post("/pokemon/:id", function (req, res) {
     var id = parseInt(req.params.id)
     var body = req.body
+    saveFavorite(id, body, res)
+})
 
-    var foundIndex = pokemons.findIndex(x => x.id == id);
-    pokemons[foundIndex] = { ...pokemons[foundIndex], ...body };
-
-    res.json(pokemons[foundIndex])
+mainRouter.put("/pokemon/:id", function (req, res) {
+    var id = parseInt(req.params.id)
+    var body = req.body
+    saveFavorite(id, body, res)
 })
 
 mainRouter.get("/move/:name?", function (req, res) {
@@ -62,6 +64,13 @@ var server = app.listen(port, function () {
 })
 
 /******* FUNCTIONS *******/
+
+var saveFavorite = function(id, pokemon, res) {
+    var foundIndex = pokemons.findIndex(x => x.id == id);
+    pokemons[foundIndex] = { ...pokemons[foundIndex], ...pokemon };
+
+    res.json(pokemons[foundIndex])
+}
 
 var getJsonObject = function(apiName, queryString, response, callback) {
     jsonfile.readFile(jsonPath + apiName + '.json', function (err, obj) {
