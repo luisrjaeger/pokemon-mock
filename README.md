@@ -5,7 +5,7 @@ Sample of a very simple mock server in Node.js using a list of 151 pokemons.
 ## How to use it:
 
 - You'll need to have at least Node.js 8.
-- On project root run `npm start` 
+- On project root run `npm install` and `npm start` 
 - It runs on `http://localhost:8081/api`
 
 ## It have these methods:
