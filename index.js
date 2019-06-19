@@ -17,6 +17,10 @@ var pokemons = jsonfile.readFileSync(jsonPath + 'pokemon.json')["pokemon"]
 var moves = jsonfile.readFileSync(jsonPath + 'pokemon.json')["move"]
 var items = jsonfile.readFileSync(jsonPath + 'pokemon.json')["item"]
 
+mainRouter.get("/pokemon/favorite", function (req, res) {
+    res.json(pokemons.filter(poke => poke.favorite))
+})
+
 mainRouter.get("/pokemon/:id?", function (req, res) {
     var id = parseInt(req.params.id)
     var result = id ? pokemons.find(poke => poke.id === id) : pokemons
