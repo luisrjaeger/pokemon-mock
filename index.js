@@ -1,21 +1,22 @@
-var express    = require('express');        // call express
-var app        = express();                 // define our app using express
+var express    = require('express');
+var app        = express();
 var bodyParser = require('body-parser');
 var jsonfile   = require('jsonfile');
-var path       = require('path');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8081;
 var mainRouter = express.Router();
-//var pokemonRouter = express.Router();
 const jsonPath = __dirname + '/jsons/'
 
-/* Build product list */
-var pokemons = jsonfile.readFileSync(jsonPath + 'pokemon.json')["pokemon"]
-var moves = jsonfile.readFileSync(jsonPath + 'pokemon.json')["move"]
-var items = jsonfile.readFileSync(jsonPath + 'pokemon.json')["item"]
+/* Build lists */
+var file = jsonfile.readFileSync(jsonPath + 'pokemon.json')
+var pokemons = file["pokemon"]
+var moves = file["move"]
+var items = file["item"]
+
+/* POKEMON */
 
 mainRouter.get("/pokemon/favorite", function (req, res) {
     res.json(pokemons.filter(poke => poke.favorite))
@@ -39,11 +40,15 @@ mainRouter.put("/pokemon/:id", function (req, res) {
     saveFavorite(id, body, res)
 })
 
+/* MOVE */
+
 mainRouter.get("/move/:name?", function (req, res) {
     var name = req.params.name
     var result = name ? moves.find(move => move.name === name) : moves
     res.json(result || moves)
 })
+
+/* ITEM */
 
 mainRouter.get("/item/:name?", function (req, res) {
     var name = req.params.name
@@ -52,8 +57,6 @@ mainRouter.get("/item/:name?", function (req, res) {
 })
 
 /******* CONFIGS *******/
-
-//mainRouter.use('/pokemon', pokemonRouter)
 
 mainRouter.get('*', function (req, res) {
     console.log("URL FALLBACK")
@@ -71,37 +74,17 @@ var server = app.listen(port, function () {
 
 var saveFavorite = function(id, pokemon, res, insert) {
     var foundIndex = pokemons.findIndex(x => x.id == id)
-    pokemons[foundIndex] = { ...pokemons[foundIndex], ...pokemon }
 
-    if (insert && foundIndex == -1) {
+    if (foundIndex != -1) {
+        pokemons[foundIndex] = { ...pokemons[foundIndex], ...pokemon }
+    } else if (insert) {
         pokemons.push(pokemon)
         foundIndex = pokemons.findIndex(x => x.id == id)
     }
 
-    res.json(pokemons[foundIndex])
-}
+    var poke = pokemons[foundIndex]
 
-var getJsonObject = function(apiName, queryString, response, callback) {
-    jsonfile.readFile(jsonPath + apiName + '.json', function (err, obj) {
-        if (err) {
-            response.json(err)
-            return
-        }
-
-        var item = obj[queryString]
-
-        if (item) {
-            if (callback) {
-                callback(item)
-                return
-            }
-
-            response.json(item)
-            return
-        }
-
-        errorCall(response, apiName)
-    })
+    poke ? res.json(poke) : errorCall(res, "pokemon")
 }
 
 var errorCall = function(res, errorName) {
@@ -111,24 +94,7 @@ var errorCall = function(res, errorName) {
             return
         }
 
-        res.status(500)
+        res.status(400)
         res.json(obj[errorName] || obj["default"])
     })
-}
-
-var buildResponse = function(success, data) {
-    return {
-        success: success,
-        data: data
-    }
-}
-
-var parseJson = function(str) {
-    var result = ''
-
-    try {
-        result = JSON.parse(str)
-    } catch(error) { }
-
-    return result
 }

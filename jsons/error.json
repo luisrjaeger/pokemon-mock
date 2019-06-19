@@ -2,5 +2,9 @@
     "default": {
         "success": false,
         "message": "Something went wrong =/"
+    },
+    "pokemon": {
+        "success": false,
+        "message": "Pokemon not found"
     }
 }
