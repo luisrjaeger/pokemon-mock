@@ -5,7 +5,8 @@ Sample of a very simple mock server in Node.js using a list of 151 pokemons.
 ## How to use it:
 
 - You'll need to have at least Node.js 8.
-- On project root run `npm start`
+- On project root run `npm start` 
+- It runs on `http://localhost:8081/api`
 
 ## It have these methods:
 
@@ -14,6 +15,8 @@ Sample of a very simple mock server in Node.js using a list of 151 pokemons.
   POST   /pokemon/:id  <- It works as a PUT when u send a existing id
   PUT    /pokemon/:id
   GET    /pokemon/favorite
-  GET    /move/:id?
-  GET    /item/:id?
+  GET    /move/:name?
+  GET    /item/:name?
 ```
+
+Changes made through API calls won't be persisted to json, after a server restart everything will come back to initial state.

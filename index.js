@@ -30,7 +30,7 @@ mainRouter.get("/pokemon/:id?", function (req, res) {
 mainRouter.post("/pokemon/:id", function (req, res) {
     var id = parseInt(req.params.id)
     var body = req.body
-    saveFavorite(id, body, res)
+    saveFavorite(id, body, res, true)
 })
 
 mainRouter.put("/pokemon/:id", function (req, res) {
@@ -69,9 +69,14 @@ var server = app.listen(port, function () {
 
 /******* FUNCTIONS *******/
 
-var saveFavorite = function(id, pokemon, res) {
-    var foundIndex = pokemons.findIndex(x => x.id == id);
-    pokemons[foundIndex] = { ...pokemons[foundIndex], ...pokemon };
+var saveFavorite = function(id, pokemon, res, insert) {
+    var foundIndex = pokemons.findIndex(x => x.id == id)
+    pokemons[foundIndex] = { ...pokemons[foundIndex], ...pokemon }
+
+    if (insert && foundIndex == -1) {
+        pokemons.push(pokemon)
+        foundIndex = pokemons.findIndex(x => x.id == id)
+    }
 
     res.json(pokemons[foundIndex])
 }
